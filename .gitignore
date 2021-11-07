@@ -1,0 +1,2 @@
+# Ignore scripts used to generate contents of copytool.html
+gen/
