@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="author" content="https://github.com/s0nought">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>copyTool</title>
+<title>copyTool (version 2)</title>
 <style>
 html {
+    background-color: #CCC;
     scroll-behavior: smooth;
 }
 
@@ -27,18 +28,22 @@ ul {
 
 textarea {
     box-sizing: border-box;
-    margin-bottom: 32px;
+    background-color: #EEE;
     resize: vertical;
     width: 100%;
 }
 
 .anchor {
-    border: 1px dotted #000;
+    border: 2px solid #000;
     position: fixed;
     right: 35px;
     bottom: 125px;
     padding: 10px 15px;
     font-size: 2em;
+}
+
+#indicator {
+    margin: 8px 0 32px 0;
 }
 
 #list {
@@ -49,11 +54,8 @@ textarea {
 }
 
 #list > div {
+    color: #00F;
     border-bottom: 1px solid #333;
-}
-
-#list > div:hover {
-    background-color: #a4ffa4;
 }
 
 #list > div > div {
@@ -82,9 +84,9 @@ textarea {
 }
 
 button.label {
-    background-color: #000;
-    border: none;
-    color: #fff;
+    background-color: #ebebeb;
+    border: 1px solid #333;
+    color: #00F;
     cursor: pointer;
     font-variant: small-caps;
     font-size: 1.25em;
@@ -94,13 +96,10 @@ button.label {
     outline: none;
 }
 
-button.label:hover {
-    background-color: #28a0ff;
-}
-
 ul.filters {
-    background-color: #000;
-    color: #fff;
+    background-color: #ebebeb;
+    border: 1px solid #333;
+    color: #00F;
     cursor: pointer;
     font-size: 1.75em;
     margin: 0 0 32px 0;
@@ -108,20 +107,21 @@ ul.filters {
 }
 
 ul.filters li {
+    border-right: 1px solid #333;
     padding: 15px;
 }
 
+button.label:hover,
 ul.filters li:hover {
-    background-color: #ff0;
-    color: #000;
-}
-
-.reset-filters {
-    color: #f00;
+    background-color: #2460ee;
+    color: #FFF;
 }
 
 .active {
-    background-color: #2850ff !important;
+    background-color: #999 !important;
+    color: #000 !important;
+    cursor: default;
+    text-decoration: underline;
 }
 
 .hidden {
@@ -134,30 +134,33 @@ ul.filters li:hover {
     <a href="#top" class="anchor">&uarr;</a>
 
     <div class="flex-container">
-        <button class="label main" type="button" data-tab-id="list_tab">&equiv; List</button>
-        <button class="label main" type="button" data-tab-id="options_tab">&#9874; Options</button>
+        <button class="label main" type="button" data-tab-id="list_tab">List</button>
+        <button class="label main" type="button" data-tab-id="options_tab">Options</button>
     </div>
 
     <!-- List -->
     <div class="tab main" id="list_tab">
 
         <div class="flex-container" style="justify-content: flex-end;">
-            <button class="label filter" type="button" data-tab-id="filters_en">🇬🇧 EN</button>
-            <button class="label filter" type="button" data-tab-id="filters_ru">🇷🇺 RU</button>
+            <button class="label filter" type="button" data-tab-id="filters_en">EN</button>
+            <button class="label filter" type="button" data-tab-id="filters_ru">RU</button>
         </div>
 
         <div class="tab filter" id="filters_en">
             <ul class="flex-container filters">
                 <li class="reset-filters">*</li>
+                <li class="display-favs">&hearts;</li>
             </ul>
         </div>
         <div class="tab filter" id="filters_ru">
             <ul class="flex-container filters">
                 <li class="reset-filters">*</li>
+                <li class="display-favs">&hearts;</li>
             </ul>
         </div>
 
         <textarea id="buffer" rows="5" readonly></textarea>
+        <div id="indicator"></div>
 
         <div id="list"></div>
 
@@ -315,10 +318,6 @@ function getRandomItem(array) {
     return array[Math.floor((Math.random() * array.length))];
 }
 
-function scrollToPageTop() {
-    window.scrollTo(0, 0);
-}
-
 function copyToClipboard(event, dataMap, bufferElement, optionsElement) {
     const buffer = bufferElement;
 
@@ -354,12 +353,11 @@ function copyToClipboard(event, dataMap, bufferElement, optionsElement) {
     }
     
     setAttribute(buffer, "dir", dir);
+    indicatorElement.innerHTML = `${dataMap.get(key).name.ru} (${dataMap.get(key).name.en})`;
 
     setInnerHTML(buffer, result);
 
     copyTextToClipboard(buffer);
-
-    scrollToPageTop();
 }
 
 function applyDefaultOptions() {
@@ -565,9 +563,14 @@ langData.set("ab", { name: { en: "Abkhazian", ru: "Абхазский" }, dir: "
 .set("zu", { name: { en: "Zulu", ru: "Зулу" }, dir: "ltr", sentences: [ "Sikholwa ukuthi, njengoba kusho amaZulu, akukho ndlovu esindwa umboko wayo.", "Izindiza azivamile ukuvunyelwa ukundiza endaweni engaphezu kwenkaba yedolobha.", "Imitha ibekwe eqandeni.", "Umhlambi wamadube uqale ukubaleka ngesikhathi ubona kuza amabhubesi.", "Uthe ebusheni bakhe, abantu abancane babesukumela abantu abadala ebhasini ukuze bahlale.", "Uhulumeni kufanele abheke izidingo zentsha.", "Ngabe uhlala wedwa?", "Ngabe le ndishi uzenzele wena?", "Ummese ubukhali – ungazisiki!", "La masokisi awakho." ] });
 
 const bufferElement = document.getElementById("buffer");
+
 const optionsElement = document.getElementById("options");
 
+const indicatorElement = document.getElementById("indicator");
+
 const langListElement = document.getElementById("list");
+
+const favsList = "en fr de it pt ru es"
 
 for (let [key, value] of langData) {
     const parent = createElement("DIV");
@@ -580,7 +583,12 @@ for (let [key, value] of langData) {
     parent.appendChild(child2);
     parent.appendChild(child3);
 
-    parent.dataset.groups = value.name.en[0] + value.name.ru[0] + "*"; // * - reset filter
+    if (favsList.indexOf(key) > -1) {
+        parent.dataset.groups = value.name.en[0] + value.name.ru[0] + "*" + " " + "FAV";
+    } else {
+        parent.dataset.groups = value.name.en[0] + value.name.ru[0] + "*"; // * - reset filter
+    }
+
     parent.dataset.dir = value.dir;
     parent.dataset.code = key;
 
@@ -607,12 +615,22 @@ resetFiltersButtons.forEach((element) => {
     });
 });
 
+// display favs buttons
+
+const displayFavsButtons = document.querySelectorAll(".display-favs");
+
+displayFavsButtons.forEach((element) => {
+    element.addEventListener("click", (event) => {
+        applyFilter(langListChildren, "FAV", filtersEnChildren, filtersRuChildren, event);
+    });
+});
+
 // set default active tabs
 document.querySelector('button[data-tab-id="list_tab"]').click();
 document.querySelector('button[data-tab-id="filters_en"]').click();
 
 // set default active filter
-document.querySelector('#filters_en .reset-filters').click();
+document.querySelector('#filters_en .display-favs').click();
 
 // set default options
 resetOptionsButton.click();

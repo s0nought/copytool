@@ -45,3 +45,13 @@ ISO 639-1 codes were parsed from [Wikipedia](https://en.wikipedia.org/wiki/Main_
 
 ## How to install
 Not required (portable).
+
+## Changelog
+
+### version 2 (2021.12.07)
+- Added version number to the `title` tag
+- Added copied language indicator below the `textarea` tag
+- Added favs list
+- Removed icons in tabs labels
+- Removed auto scroll to top on copying to clipboard
+- Tweaked color scheme
