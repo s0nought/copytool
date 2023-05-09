@@ -1,4 +1,6 @@
-# copytool
+# DEPRECATED
+
+This repository is no longer supported.
 
 ## Summary
 Static website.
